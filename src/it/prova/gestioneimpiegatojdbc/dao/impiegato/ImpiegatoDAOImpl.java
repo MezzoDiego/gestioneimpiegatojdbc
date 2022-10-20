@@ -180,8 +180,48 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO {
 
 	@Override
 	public List<Impiegato> findAllByCompagnia(Compagnia compagnia) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (compagnia == null || compagnia.getId() < 1)
+			throw new Exception("Valore di input non ammesso.");
+
+		Compagnia tempCompagnia = null;
+		Impiegato tempImpiegato = null;
+		List<Impiegato> result = new ArrayList<>();
+		try (PreparedStatement ps = connection
+				.prepareStatement("select * from impiegato i join compagnia c on c.id=i.compagnia_id where c.id= ?")) {
+
+			ps.setLong(1, compagnia.getId());
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+
+					tempCompagnia = new Compagnia();
+					tempCompagnia.setId(rs.getLong("c.id"));
+					tempCompagnia.setRagioneSociale(rs.getString("c.ragionesociale"));
+					tempCompagnia.setFatturatoAnnuo(rs.getInt("c.fatturatoannuo"));
+					tempCompagnia.setDataFondazione(rs.getDate("c.datafondazione"));
+
+					tempImpiegato = new Impiegato();
+					tempImpiegato.setId(rs.getLong("i.id"));
+					tempImpiegato.setNome(rs.getString("i.nome"));
+					tempImpiegato.setCognome(rs.getString("i.cognome"));
+					tempImpiegato.setCodiceFiscale(rs.getString("i.codicefiscale"));
+					tempImpiegato.setDataNascita(rs.getDate("i.datanascita"));
+					tempImpiegato.setDataAssunzione(rs.getDate("i.dataassunzione"));
+					tempImpiegato.setCompagnia(tempCompagnia);
+
+					result.add(tempImpiegato);
+
+				}
+			} // niente catch qui
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override

@@ -107,7 +107,7 @@ public class Impiegato {
 
 	@Override
 	public String toString() {
-		return "Impiegato [id=" + id + ", nome=" + nome + ", cognome=" + cognome + ", codiceFiscale=" + codiceFiscale
+		return "\n Impiegato [id=" + id + ", nome=" + nome + ", cognome=" + cognome + ", codiceFiscale=" + codiceFiscale
 				+ ", dataNascita=" + dataNascita + ", dataAssunzione=" + dataAssunzione + ", compagnia=" + compagnia
 				+ "]";
 	}

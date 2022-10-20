@@ -82,7 +82,7 @@ public class Compagnia {
 
 	@Override
 	public String toString() {
-		return "Compagnia [id=" + id + ", ragioneSociale=" + ragioneSociale + ", fatturatoAnnuo=" + fatturatoAnnuo
+		return "\n Compagnia [id=" + id + ", ragioneSociale=" + ragioneSociale + ", fatturatoAnnuo=" + fatturatoAnnuo
 				+ ", dataFondazione=" + dataFondazione + ", impiegati=" + impiegati + "]";
 	}
 
