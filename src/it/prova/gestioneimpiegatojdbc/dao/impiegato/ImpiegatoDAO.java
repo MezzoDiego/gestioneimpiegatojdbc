@@ -11,4 +11,6 @@ public interface ImpiegatoDAO extends IBaseDAO<Impiegato>{
 	public List<Impiegato> findAllByCompagnia(Compagnia compagnia) throws Exception;
 	public int countByDataFondazioneCompagniaGreaterThan(Date data) throws Exception;
 	public List<Impiegato> findAllErroriAssunzione() throws Exception;
+	public int deleteAll() throws Exception;
+
 }

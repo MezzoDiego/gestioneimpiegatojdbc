@@ -1,6 +1,8 @@
 package it.prova.gestioneimpiegatojdbc.test;
 
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import it.prova.gestioneimpiegatojdbc.connection.MyConnection;
@@ -18,18 +20,80 @@ public class TestCompagnia {
 			// ecco chi 'inietta' la connection: il chiamante
 			compagniaDAOInstance = new CompagniaDAOImpl(connection);
 //*************************************************************
+
+			// testInsert(compagniaDAOInstance);
+
+			System.out.println("-----------------------------------------------------------------------------");
+
+			//testDelete(compagniaDAOInstance);
+
+			System.out.println("-----------------------------------------------------------------------------");
 			
-			testInsert(compagniaDAOInstance);
 			
+			
+			System.out.println("-----------------------------------------------------------------------------");
+			System.out.println("-----------------------------------------------------------------------------");
+			System.out.println("-----------------------------------------------------------------------------");
+			System.out.println("-----------------------------------------------------------------------------");
+			
+
 //*************************************************************			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
-	
-	private static void testInsert(CompagniaDAO compagniaDAOInstance) throws Exception{
+
+	private static void testInsert(CompagniaDAO compagniaDAOInstance) throws Exception {
+		// mi salvo in una variabile la lista dei records di compagnia presenti nella
+		// tabella
 		List<Compagnia> elencoCompagniePresenti = compagniaDAOInstance.list();
+		int quantiPresenti = elencoCompagniePresenti.size();
+		// eseguo la insert
+		Date dataPerTestInsert = new SimpleDateFormat("dd-MM-yyyy").parse("03-01-2022");
+		Compagnia compagniaDaInserire = new Compagnia("Annecchiarico s.r.l.", 1000000, dataPerTestInsert);
+		compagniaDAOInstance.insert(compagniaDaInserire);
+
+		// verifico che sia andato tutto bene
+		if (quantiPresenti + 1 != compagniaDAOInstance.list().size())
+			throw new AssertionError("Test Insert: FAILED");
+
+		// stampa records
+		System.out.println(elencoCompagniePresenti);
+
+		// reset tabella
+		int rowsAffected = compagniaDAOInstance.deleteAll();
+		System.out.println("cancellati " + rowsAffected + " records");
+
+	}
+
+	private static void testDelete(CompagniaDAO compagniaDAOInstance) throws Exception {
+		// mi salvo in una variabile la lista dei records di compagnia presenti nella
+		// tabella
+		List<Compagnia> elencoCompagniePresenti = compagniaDAOInstance.list();
+		int quantiPresenti = elencoCompagniePresenti.size();
+		// eseguo la insert
+		Date dataPerTestInsert = new SimpleDateFormat("dd-MM-yyyy").parse("03-01-2022");
+		Compagnia compagniaDaInserire = new Compagnia("Annecchiarico s.r.l.", 1000000, dataPerTestInsert);
+		compagniaDAOInstance.insert(compagniaDaInserire);
+
+		// verifico che sia andato tutto bene
+		if (quantiPresenti + 1 != compagniaDAOInstance.list().size())
+			throw new AssertionError("Test Insert: FAILED");
+
+		// stampa records
+		System.out.println("before delete.." + compagniaDAOInstance.list());
+
+		// mi salvo l'id per provare a ricaricarlo dopo la delete
+		Long idElementoPerRicaricataDaDB = elencoCompagniePresenti.get(0).getId();
+		// eseguo la delete vera e propria
+		compagniaDAOInstance.delete(elencoCompagniePresenti.get(0));
+		// verifica effettiva eliminazione
+		Compagnia compagniaRicaricataDaDB = compagniaDAOInstance.get(idElementoPerRicaricataDaDB);
+		if (compagniaRicaricataDaDB != null)
+			throw new RuntimeException("Test delete: FAILED");
+		System.out.println("after delete..." + compagniaDAOInstance.list());
+
 	}
 
 }

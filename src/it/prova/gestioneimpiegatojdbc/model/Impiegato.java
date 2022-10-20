@@ -38,6 +38,17 @@ public class Impiegato {
 		this.compagnia = compagnia;
 	}
 
+	public Impiegato(String nome, String cognome, String codiceFiscale, Date dataNascita, Date dataAssunzione,
+			Compagnia compagnia) {
+		super();
+		this.nome = nome;
+		this.cognome = cognome;
+		this.codiceFiscale = codiceFiscale;
+		this.dataNascita = dataNascita;
+		this.dataAssunzione = dataAssunzione;
+		this.compagnia = compagnia;
+	}
+
 	public Long getId() {
 		return id;
 	}
