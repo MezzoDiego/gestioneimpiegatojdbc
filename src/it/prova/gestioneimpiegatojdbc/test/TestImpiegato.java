@@ -29,8 +29,9 @@ public class TestImpiegato {
 			System.out.println("-----------------------------------------------------------------------------");
 			//testDelete(impiegatoDAOInstance, compagniaDAOInstance);
 			System.out.println("-----------------------------------------------------------------------------");
-			testFindAllByCompagnia(impiegatoDAOInstance, compagniaDAOInstance);
+			//testFindAllByCompagnia(impiegatoDAOInstance, compagniaDAOInstance);
 			System.out.println("-----------------------------------------------------------------------------");
+			testCountByDataFondazioneCompagniaGreaterThan(impiegatoDAOInstance, compagniaDAOInstance);
 			System.out.println("-----------------------------------------------------------------------------");
 
 //********************************************************************
@@ -134,11 +135,34 @@ public class TestImpiegato {
 				
 				if(impiegatiFacentiParteDiUnaDeterminataCompagnia.isEmpty())
 					throw new RuntimeException("non ci sono impiegati facenti parte di questa compagnia!");
-				System.out.println(impiegatiFacentiParteDiUnaDeterminataCompagnia);
+				System.out.println(impiegatiFacentiParteDiUnaDeterminataCompagnia);	
+				
+				//reset tabella
+				int rowsAffected = impiegatoDAOInstance.deleteAll();
+				System.out.println("rimossi " + rowsAffected + " records");
+			
+	}
+	
+	private static void testCountByDataFondazioneCompagniaGreaterThan(ImpiegatoDAO impiegatoDAOInstance, CompagniaDAO compagniaDAOInstance) throws Exception {
+		List<Impiegato> elencoImpiegatiPresenti = impiegatoDAOInstance.list();
+		int quantiPresenti = elencoImpiegatiPresenti.size();
+		
+		// eseguo la insert
+				Date dataDiNascitaPerTestInsert = new SimpleDateFormat("dd-MM-yyyy").parse("01-10-2002");
+				Date dataAssunzionePerTestInsert = new SimpleDateFormat("dd-MM-yyyy").parse("01-08-2021");
+				Compagnia compagniaPerLaQualeLavoraImpiegato = compagniaDAOInstance.list().get(0);
 
-		
-		
-		
+				Impiegato impiegatoDaInserire = new Impiegato("diego", "mezzo", "mzzdgi02r01i608p", dataDiNascitaPerTestInsert,
+						dataAssunzionePerTestInsert, compagniaPerLaQualeLavoraImpiegato);
+				impiegatoDAOInstance.insert(impiegatoDaInserire);
+
+				// verifico che sia andato tutto bene
+				if (quantiPresenti + 1 != impiegatoDAOInstance.list().size())
+					throw new AssertionError("Test Insert: FAILED");
+				
+				int quantiImpiegatiAventiCompagniaFondataDopoDi = impiegatoDAOInstance.countByDataFondazioneCompagniaGreaterThan(new SimpleDateFormat("dd-MM-yyyy").parse("01-08-2021"));
+				
+				System.out.println("numero impiegati aventi compagnia fondata dopo una data precisa: " + quantiImpiegatiAventiCompagniaFondataDopoDi);
 	}
 
 }

@@ -225,9 +225,31 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO {
 	}
 
 	@Override
-	public int countByDataFondazioneCompagniaGreaterThan(Date data) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+	public int countByDataFondazioneCompagniaGreaterThan(java.util.Date data) throws Exception {
+		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (data == null)
+			throw new Exception("Valore di input non ammesso.");
+
+		int result = 0;
+		try (PreparedStatement ps = connection.prepareStatement(
+				"select count(*) as counter from impiegato i join compagnia c on c.id=i.compagnia_id where c.datafondazione > ?")) {
+
+			ps.setDate(1, new java.sql.Date(data.getTime()));
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					result = rs.getInt("counter");
+
+				}
+			} // niente catch qui
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
