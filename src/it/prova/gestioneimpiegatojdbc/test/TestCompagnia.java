@@ -29,11 +29,12 @@ public class TestCompagnia {
 
 			System.out.println("-----------------------------------------------------------------------------");
 			
+		    //testFindAllByDataAssunzioneMaggioreDi(compagniaDAOInstance);
 			
+			System.out.println("-----------------------------------------------------------------------------");
 			
-			System.out.println("-----------------------------------------------------------------------------");
-			System.out.println("-----------------------------------------------------------------------------");
-			System.out.println("-----------------------------------------------------------------------------");
+			testFindAllByRagioneSocialeContiene(compagniaDAOInstance);
+			
 			System.out.println("-----------------------------------------------------------------------------");
 			
 
@@ -94,6 +95,53 @@ public class TestCompagnia {
 			throw new RuntimeException("Test delete: FAILED");
 		System.out.println("after delete..." + compagniaDAOInstance.list());
 
+	}
+	
+	private static void testFindAllByDataAssunzioneMaggioreDi(CompagniaDAO compagniaDAOInstance) throws Exception{
+		System.out.println(".......testFindAllByDataAssunzioneMaggioreDi inizio.............");
+
+		List<Compagnia> elencoCompagniePresenti = compagniaDAOInstance.list();
+		int quantiPresenti = elencoCompagniePresenti.size();
+		// eseguo la insert
+		Date dataPerTestInsert = new SimpleDateFormat("dd-MM-yyyy").parse("03-01-2022");
+		Compagnia compagniaDaInserire = new Compagnia("Annecchiarico s.r.l.", 1000000, dataPerTestInsert);
+		compagniaDAOInstance.insert(compagniaDaInserire);
+
+		// verifico che sia andato tutto bene
+		if (quantiPresenti + 1 != compagniaDAOInstance.list().size())
+			throw new AssertionError("Test Insert: FAILED");
+		
+		List<Compagnia> listaDiCompagnieAventiImiegatiConDataAssunzioneMaggioreDi = compagniaDAOInstance.findAllByDataAssunzioneMaggioreDi(new SimpleDateFormat("dd-MM-yyyy").parse("03-01-2020"));
+
+		System.out.println(listaDiCompagnieAventiImiegatiConDataAssunzioneMaggioreDi);
+		
+		// reset tabella
+		int rowsAffected = compagniaDAOInstance.deleteAll();
+		System.out.println("cancellati " + rowsAffected + " records");
+
+		System.out.println(".......testFindAllByDataAssunzioneMaggioreDi fine: PASSED.............");
+	}
+	
+	private static void testFindAllByRagioneSocialeContiene(CompagniaDAO compagniaDAOInstance) throws Exception {
+		System.out.println(".......testFindAllByRagioneSocialeContiene inizio.............");
+
+		List<Compagnia> elencoCompagniePresenti = compagniaDAOInstance.list();
+		int quantiPresenti = elencoCompagniePresenti.size();
+		// eseguo la insert
+		Date dataPerTestInsert = new SimpleDateFormat("dd-MM-yyyy").parse("03-01-2022");
+		Compagnia compagniaDaInserire = new Compagnia("Annecchiarico s.r.l.", 1000000, dataPerTestInsert);
+		compagniaDAOInstance.insert(compagniaDaInserire);
+
+		// verifico che sia andato tutto bene
+		if (quantiPresenti + 1 != compagniaDAOInstance.list().size())
+			throw new AssertionError("Test Insert: FAILED");
+		
+		List<Compagnia> listaDiCompagnieAventiRagioneSocialeContenente = compagniaDAOInstance.findAllByRagioneSocialeContiene("Anne");
+
+		System.out.println(listaDiCompagnieAventiRagioneSocialeContenente);
+		
+
+		System.out.println(".......testFindAllByRagioneSocialeContiene fine: PASSED.............");
 	}
 
 }
