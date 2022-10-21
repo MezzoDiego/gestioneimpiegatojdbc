@@ -25,7 +25,7 @@ public class TestImpiegato {
 			impiegatoDAOInstance = new ImpiegatoDAOImpl(connection);
 			compagniaDAOInstance = new CompagniaDAOImpl(connection);
 //********************************************************************
-			// testInsert(impiegatoDAOInstance, compagniaDAOInstance);
+			 //testInsert(impiegatoDAOInstance, compagniaDAOInstance);
 			System.out.println("-----------------------------------------------------------------------------");
 			// testDelete(impiegatoDAOInstance, compagniaDAOInstance);
 			System.out.println("-----------------------------------------------------------------------------");
@@ -33,7 +33,7 @@ public class TestImpiegato {
 			System.out.println("-----------------------------------------------------------------------------");
 			//testCountByDataFondazioneCompagniaGreaterThan(impiegatoDAOInstance, compagniaDAOInstance);
 			System.out.println("-----------------------------------------------------------------------------");
-			testFindAllErroriAssunzione(impiegatoDAOInstance, compagniaDAOInstance);
+			//testFindAllErroriAssunzione(impiegatoDAOInstance, compagniaDAOInstance);
 
 //********************************************************************
 
@@ -49,10 +49,19 @@ public class TestImpiegato {
 		List<Impiegato> elencoImpiegatiPresenti = impiegatoDAOInstance.list();
 		int quantiPresenti = elencoImpiegatiPresenti.size();
 		// eseguo la insert
+		// eseguo la insert
+				Date dataPerTestInsert = new SimpleDateFormat("dd-MM-yyyy").parse("03-01-2022");
+				Compagnia compagniaDaInserire = new Compagnia("Annecchiarico s.r.l.", 1000000, dataPerTestInsert);
+				int rowsAffectedInsert = compagniaDAOInstance.insert(compagniaDaInserire);
+
+				// verifico che sia andato tutto bene
+				if (rowsAffectedInsert < 1)
+					throw new AssertionError("Test Insert: FAILED");
+
 		Date dataDiNascitaPerTestInsert = new SimpleDateFormat("dd-MM-yyyy").parse("01-10-2002");
 		Date dataAssunzionePerTestInsert = new SimpleDateFormat("dd-MM-yyyy").parse("01-08-2021");
 		Compagnia compagniaPerLaQualeLavoraImpiegato = compagniaDAOInstance.list().get(0);
-
+		
 		Impiegato impiegatoDaInserire = new Impiegato("diego", "mezzo", "mzzdgi02r01i608p", dataDiNascitaPerTestInsert,
 				dataAssunzionePerTestInsert, compagniaPerLaQualeLavoraImpiegato);
 		impiegatoDAOInstance.insert(impiegatoDaInserire);
@@ -62,7 +71,7 @@ public class TestImpiegato {
 			throw new AssertionError("Test Insert: FAILED");
 
 		// stampa records
-		System.out.println(elencoImpiegatiPresenti);
+		System.out.println(impiegatoDAOInstance.list());
 
 		// reset tabella
 		int rowsAffected = impiegatoDAOInstance.deleteAll();

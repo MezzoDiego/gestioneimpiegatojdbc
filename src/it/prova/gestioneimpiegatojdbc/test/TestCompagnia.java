@@ -9,23 +9,28 @@ import it.prova.gestioneimpiegatojdbc.connection.MyConnection;
 import it.prova.gestioneimpiegatojdbc.dao.Constants;
 import it.prova.gestioneimpiegatojdbc.dao.compagnia.CompagniaDAO;
 import it.prova.gestioneimpiegatojdbc.dao.compagnia.CompagniaDAOImpl;
+import it.prova.gestioneimpiegatojdbc.dao.impiegato.ImpiegatoDAO;
+import it.prova.gestioneimpiegatojdbc.dao.impiegato.ImpiegatoDAOImpl;
 import it.prova.gestioneimpiegatojdbc.model.Compagnia;
 
 public class TestCompagnia {
 
 	public static void main(String[] args) {
 		CompagniaDAO compagniaDAOInstance = null;
+		ImpiegatoDAO impiegatoDAOInstance = null;
+
 
 		try (Connection connection = MyConnection.getConnection(Constants.DRIVER_NAME, Constants.CONNECTION_URL)) {
 			// ecco chi 'inietta' la connection: il chiamante
 			compagniaDAOInstance = new CompagniaDAOImpl(connection);
+			impiegatoDAOInstance = new ImpiegatoDAOImpl(connection);
 //*************************************************************
 
-			// testInsert(compagniaDAOInstance);
+			 //testInsert(compagniaDAOInstance);
 
 			System.out.println("-----------------------------------------------------------------------------");
 
-			//testDelete(compagniaDAOInstance);
+			//testDelete(compagniaDAOInstance, impiegatoDAOInstance);
 
 			System.out.println("-----------------------------------------------------------------------------");
 			
@@ -33,7 +38,7 @@ public class TestCompagnia {
 			
 			System.out.println("-----------------------------------------------------------------------------");
 			
-			testFindAllByRagioneSocialeContiene(compagniaDAOInstance);
+			//testFindAllByRagioneSocialeContiene(compagniaDAOInstance);
 			
 			System.out.println("-----------------------------------------------------------------------------");
 			
@@ -60,7 +65,7 @@ public class TestCompagnia {
 			throw new AssertionError("Test Insert: FAILED");
 
 		// stampa records
-		System.out.println(elencoCompagniePresenti);
+		System.out.println(compagniaDAOInstance.list());
 
 		// reset tabella
 		int rowsAffected = compagniaDAOInstance.deleteAll();
@@ -68,7 +73,7 @@ public class TestCompagnia {
 
 	}
 
-	private static void testDelete(CompagniaDAO compagniaDAOInstance) throws Exception {
+	private static void testDelete(CompagniaDAO compagniaDAOInstance, ImpiegatoDAO impiegatoDAOInstance) throws Exception {
 		// mi salvo in una variabile la lista dei records di compagnia presenti nella
 		// tabella
 		List<Compagnia> elencoCompagniePresenti = compagniaDAOInstance.list();
@@ -86,9 +91,10 @@ public class TestCompagnia {
 		System.out.println("before delete.." + compagniaDAOInstance.list());
 
 		// mi salvo l'id per provare a ricaricarlo dopo la delete
-		Long idElementoPerRicaricataDaDB = elencoCompagniePresenti.get(0).getId();
+		Long idElementoPerRicaricataDaDB = compagniaDAOInstance.list().get(0).getId();
 		// eseguo la delete vera e propria
-		compagniaDAOInstance.delete(elencoCompagniePresenti.get(0));
+		impiegatoDAOInstance.deleteChildRows(compagniaDAOInstance.list().get(0));
+		compagniaDAOInstance.delete(compagniaDAOInstance.list().get(0));
 		// verifica effettiva eliminazione
 		Compagnia compagniaRicaricataDaDB = compagniaDAOInstance.get(idElementoPerRicaricataDaDB);
 		if (compagniaRicaricataDaDB != null)

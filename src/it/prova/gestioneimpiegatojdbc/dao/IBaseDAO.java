@@ -13,6 +13,6 @@ public interface IBaseDAO<T> {
 	public int insert(T input) throws Exception;
 
 	public int delete(T input) throws Exception;
-
+	
 
 }

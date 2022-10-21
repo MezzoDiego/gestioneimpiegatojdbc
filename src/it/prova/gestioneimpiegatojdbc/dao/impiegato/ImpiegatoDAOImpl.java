@@ -258,7 +258,7 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO {
 		if (isNotActive())
 			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
 
-		Compagnia tempCompagnia =null;
+		Compagnia tempCompagnia = null;
 		Impiegato temp = null;
 		List<Impiegato> result = new ArrayList<>();
 		try (Statement s = connection.createStatement()) {
@@ -266,13 +266,13 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO {
 			try (ResultSet rs = s.executeQuery(
 					"select * from impiegato i join compagnia c on c.id=i.compagnia_id where i.dataassunzione < c.datafondazione")) {
 				while (rs.next()) {
-					
-					tempCompagnia= new Compagnia();
+
+					tempCompagnia = new Compagnia();
 					tempCompagnia.setId(rs.getLong("c.id"));
 					tempCompagnia.setRagioneSociale(rs.getString("c.ragionesociale"));
 					tempCompagnia.setFatturatoAnnuo(rs.getInt("c.fatturatoannuo"));
 					tempCompagnia.setDataFondazione(rs.getDate("c.datafondazione"));
-					
+
 					temp = new Impiegato();
 					temp.setId(rs.getLong("i.id"));
 					temp.setNome(rs.getString("i.nome"));
@@ -285,6 +285,26 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO {
 				}
 			} // niente catch qui
 
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
+	}
+
+	@Override
+	public int deleteChildRows(Compagnia compagnia) throws Exception {
+		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (compagnia == null || compagnia.getId() == null || compagnia.getId() < 1)
+			throw new Exception("Valore di input non ammesso.");
+
+		int result = 0;
+		try (PreparedStatement ps = connection.prepareStatement("DELETE FROM impiegato i WHERE i.compagnia_id=?")) {
+			ps.setLong(1, compagnia.getId());
+			result = ps.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
