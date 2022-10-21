@@ -254,8 +254,42 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO {
 
 	@Override
 	public List<Impiegato> findAllErroriAssunzione() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		Compagnia tempCompagnia =null;
+		Impiegato temp = null;
+		List<Impiegato> result = new ArrayList<>();
+		try (Statement s = connection.createStatement()) {
+
+			try (ResultSet rs = s.executeQuery(
+					"select * from impiegato i join compagnia c on c.id=i.compagnia_id where i.dataassunzione < c.datafondazione")) {
+				while (rs.next()) {
+					
+					tempCompagnia= new Compagnia();
+					tempCompagnia.setId(rs.getLong("c.id"));
+					tempCompagnia.setRagioneSociale(rs.getString("c.ragionesociale"));
+					tempCompagnia.setFatturatoAnnuo(rs.getInt("c.fatturatoannuo"));
+					tempCompagnia.setDataFondazione(rs.getDate("c.datafondazione"));
+					
+					temp = new Impiegato();
+					temp.setId(rs.getLong("i.id"));
+					temp.setNome(rs.getString("i.nome"));
+					temp.setCognome(rs.getString("i.cognome"));
+					temp.setCodiceFiscale(rs.getString("i.codicefiscale"));
+					temp.setDataNascita(rs.getDate("i.datanascita"));
+					temp.setDataAssunzione(rs.getDate("i.dataassunzione"));
+					temp.setCompagnia(tempCompagnia);
+					result.add(temp);
+				}
+			} // niente catch qui
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 }
